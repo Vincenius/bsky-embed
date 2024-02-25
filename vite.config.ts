@@ -17,8 +17,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: './src/WebComponent.tsx',
-      name: 'my-component',
-      fileName: (format) => `my-component.${format}.js`
+      name: 'bsky-embed',
+      fileName: (format) => `bsky-embed.${format}.js`
     },
     target: 'esnext',
   },
