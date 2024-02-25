@@ -7,7 +7,7 @@ const App: Component = () => {
 
   return (
     <main style={{ background: mode === 'dark' ? "#000" : '#fff' }}>
-      <BskyEmbed username="pablolarah.bsky.social" limit={10} mode={mode} />
+      <BskyEmbed username="danabra.mov" limit={10} mode={mode} />
     </main>
   );
 };

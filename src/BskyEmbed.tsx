@@ -21,29 +21,30 @@ const BskyEmbed: Component<Props> = ({
   const [feedData, setFeedData] = createSignal([]);
 
   createEffect(() => {
-      // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
-      agent.app.bsky.feed.getAuthorFeed({
-        limit,
-        actor: username,
-        filter: "posts_no_replies",
-      }).then(({ success, data }) => {
-        if (success) {
-          const feed = (data.feed || []).map(({ post }) => ({
-            username: post.author.displayName,
-            handle: post.author.handle,
-            avatar: post.author.avatar, // todo fallback
-            text: post.record.text,
-            createdAt: post.record.createdAt,
-            uri: post.uri,
-            images: post?.embed?.images || [],
-            // todo images
-          }));
-          setFeedData(feed)
-          setIsLoading(false)
-        } else {
-          // todo error handling
-        }
-      });
+    setIsLoading(true);
+    // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
+    agent.app.bsky.feed.getAuthorFeed({
+      limit,
+      actor: username,
+      filter: "posts_no_replies",
+    }).then(({ success, data }) => {
+      if (success) {
+        const feed = (data.feed || []).map(({ post }) => ({
+          username: post.author.displayName,
+          handle: post.author.handle,
+          avatar: post.author.avatar, // todo fallback
+          text: post.record.text,
+          createdAt: post.record.createdAt,
+          uri: post.uri,
+          images: post?.embed?.images || [],
+          // todo images
+        }));
+        setFeedData(feed)
+        setIsLoading(false)
+      } else {
+        // todo error handling
+      }
+    });
   })
 
   const handleModalContent = (e, image) => {
@@ -59,7 +60,20 @@ const BskyEmbed: Component<Props> = ({
         {styles}
       </style>
       <section class={`${mode} max-w-screen-sm mx-auto`}>
-        {feedData().map(post => <article class="flex gap-2 p-4 border-b border-slate-300 dark:border-slate-800">
+        {isLoading() && Array.from(Array(limit)).map(() =>
+          <article class="flex gap-2 p-4 border-b border-slate-300 dark:border-slate-800 animate-pulse">
+            <div class="bg-slate-200 w-14 h-14 rounded-full dark:bg-slate-800"></div>
+            <div class="flex-1 space-y-2 py-1">
+              <div class="grid grid-cols-4 gap-4">
+                <div class="h-2 bg-slate-200 rounded col-span-2 dark:bg-slate-800"></div>
+              </div>
+              <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+              <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+              <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+            </div>
+          </article>
+        )}
+        {!isLoading() && feedData().map(post => <article class="flex gap-2 p-4 border-b border-slate-300 dark:border-slate-800">
           <img src={post.avatar} alt="profile picture" class="w-14 h-14 rounded-full" />
           <div>
             <div class="flex max-w-[calc(100vw-96px)] items-center">
@@ -75,7 +89,7 @@ const BskyEmbed: Component<Props> = ({
 
             <p class="whitespace-pre-wrap dark:text-white">{post.text}</p>
 
-            { post.images.length > 0 && <div class="mt-4">
+            { post.images.length > 0 && <div class={post.images.length > 1 ? "mt-4 grid grid-cols-2 gap-2" : "mt-4"}>
               { post.images.map(image =>
                 <a href="#open-modal" onClick={e => handleModalContent(e, image)}>
                   <img src={image.thumb} alt={image.alt} class="rounded-md"  />

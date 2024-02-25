@@ -4,7 +4,9 @@ Work in progress...
 
 ## todos
 
-- upload to npm
-- loading screen
+- add links and mentions to post
+- modal loading screen
+- todo typescript errors
 - documentation
 - demo website
+- upload to npm
