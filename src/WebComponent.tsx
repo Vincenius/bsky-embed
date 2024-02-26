@@ -1,4 +1,4 @@
 import { customElement } from 'solid-element';
-import App from './App';
+import BskyEmbed from './BskyEmbed';
 
-customElement('bsky-embed', { username: '', limit: 10, mode: '' }, App);
+customElement('bsky-embed', { username: '', limit: 10, mode: '' }, BskyEmbed);

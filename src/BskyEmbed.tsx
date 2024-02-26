@@ -37,15 +37,18 @@ const BskyEmbed: Component<Props> = ({
           const replaces = facets.map((f: any) => {
             const linkText = rawText.substring(f.index.byteStart, f.index.byteEnd)
             const type = f.features[0].$type
-            const link = type === 'app.bsky.richtext.facet#link'
-              ? f.features[0].uri
-              : type === 'app.bsky.richtext.facet#mention'
-                ? `https://bsky.app/profile/${f.features[0].did}`
-                : ''
+            const typeMap = {
+              "app.bsky.richtext.facet#link": f.features[0].uri,
+              "app.bsky.richtext.facet#mention": `https://bsky.app/profile/${f.features[0].did}`,
+              // "app.bsky.richtext.facet#tag": `not existing yet`,
+            }
+            const link = typeMap[type]
 
             return {
               from: linkText,
-              to: `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a> `
+              to: link
+                ? `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a> `
+                : linkText,
             }
           })
 
