@@ -1,14 +1,16 @@
 {
-  "name": "vite-template-solid",
-  "version": "0.0.0",
-  "description": "",
+  "name": "bsky-embed",
+  "version": "0.0.1",
+  "description": "A web-component to easily embed a bluesky feed",
   "scripts": {
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },
+  "author": "Vincent Will <info@wweb.dev>",
   "license": "MIT",
+  "repository": "Vincenius/bsky-embed",
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",

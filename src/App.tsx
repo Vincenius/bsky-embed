@@ -1,13 +1,19 @@
 import type { Component } from 'solid-js';
 import BskyEmbed from './BskyEmbed';
+import './globals.css'
 
 // planned options - username, limit, theme, debug (show generic vs real error)
 const App: Component = () => {
-  const mode = 'dark'
+  const options = {
+    username: "vincentwill.com",
+    mode: "dark"
+  }
 
   return (
-    <main style={{ background: mode === 'dark' ? "#000" : '#fff' }}>
-      <BskyEmbed username="danabra.mov" limit={10} mode={mode} />
+    <main class={options.mode === 'dark' ? 'bg-slate-900' : 'bg-slate-100'}>
+      <div class="">
+        <BskyEmbed username={options.username} limit={10} mode={options.mode} />
+      </div>
     </main>
   );
 };

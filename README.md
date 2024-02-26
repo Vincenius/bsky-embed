@@ -1,12 +1,11 @@
 # Bluesky Embed
 
-Work in progress...
+A web-component to easily embed a bluesky feed
+
+
 
 ## todos
 
-- add links and mentions to post
-- modal loading screen
-- todo typescript errors
+- fix typescript errors
 - documentation
-- demo website
 - upload to npm
