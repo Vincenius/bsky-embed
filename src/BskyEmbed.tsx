@@ -4,7 +4,7 @@ import "@github/relative-time-element"
 
 import styles from './globals.css?inline'
 import { agent } from "./lib/api";
-import { split } from './lib/utils'
+import { split, substringByBytes } from './lib/utils'
 
 interface Props {
   username: string;
@@ -35,7 +35,7 @@ const BskyEmbed: Component<Props> = ({
           const facets = post.record.facets || [];
           const rawText = post.record.text;
           const replaces = facets.map((f: any) => {
-            const linkText = rawText.substring(f.index.byteStart, f.index.byteEnd)
+            const linkText = substringByBytes(rawText, f.index.byteStart, f.index.byteEnd - f.index.byteStart)
             const type = f.features[0].$type
             const typeMap = {
               "app.bsky.richtext.facet#link": f.features[0].uri,
@@ -47,7 +47,7 @@ const BskyEmbed: Component<Props> = ({
             return {
               from: linkText,
               to: link
-                ? `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a> `
+                ? `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a>`
                 : linkText,
             }
           })
@@ -60,6 +60,7 @@ const BskyEmbed: Component<Props> = ({
                 setInnerHtml: !!replaceWith,
               }
             })
+            console.log(rawText, text)
 
           return {
             username: post.author.displayName,
@@ -73,6 +74,7 @@ const BskyEmbed: Component<Props> = ({
             repostBy: reason?.by?.displayName,
           }
         });
+        console.log(feed)
         setFeedData(feed)
         setIsLoading(false)
       } else {

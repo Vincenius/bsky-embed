@@ -6,7 +6,7 @@ import './globals.css'
 const App: Component = () => {
   const options = {
     username: "vincentwill.com",
-    mode: "dark"
+    mode: ""
   }
 
   return (
