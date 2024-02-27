@@ -11,4 +11,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <App username="vincentwill.com"/>, root!);
+render(() => <App />, root!);

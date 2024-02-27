@@ -53,3 +53,48 @@ export const split = (str: string, words: string[]) => {
 
   return result;
 }
+
+export const formatData = (data: any) => 
+    (data.feed || []).map(({ post, reason }) => {
+        const facets = post.record.facets || [];
+        const rawText = post.record.text;
+        const replaces = facets.map((f: any) => {
+          const linkText = substringByBytes(rawText, f.index.byteStart, f.index.byteEnd - f.index.byteStart)
+          const type = f.features[0].$type
+          const typeMap = {
+            "app.bsky.richtext.facet#link": f.features[0].uri,
+            "app.bsky.richtext.facet#mention": `https://bsky.app/profile/${f.features[0].did}`,
+            // "app.bsky.richtext.facet#tag": `not existing yet`,
+          }
+          const link = typeMap[type]
+
+          return {
+            from: linkText,
+            to: link
+              ? `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a>`
+              : linkText,
+          }
+        })
+
+        const text = split(rawText, replaces.map((r: any) => r.from))
+          .map(t => {
+            const replaceWith = replaces.find((r: any) => r.from === t);
+            return {
+              val: replaceWith?.to || t,
+              setInnerHtml: !!replaceWith,
+            }
+          })
+          console.log(rawText, text)
+
+        return {
+          username: post.author.displayName,
+          handle: post.author.handle,
+          avatar: post.author.avatar, // todo fallback
+          text,
+          createdAt: post.record.createdAt,
+          uri: post.uri,
+          images: post.embed?.images || [],
+          isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
+          repostBy: reason?.by?.displayName,
+        }
+      });

@@ -4,16 +4,18 @@ import "@github/relative-time-element"
 
 import styles from './globals.css?inline'
 import { agent } from "./lib/api";
-import { split, substringByBytes } from './lib/utils'
+import { formatData } from './lib/utils'
 
 interface Props {
-  username: string;
+  username?: string;
+  feed?: string;
   limit?: number;
   mode?: 'dark' | '';
 }
 
 const BskyEmbed: Component<Props> = ({
   username,
+  feed,
   limit = 10,
   mode = '',
 }: Props) => {
@@ -25,62 +27,35 @@ const BskyEmbed: Component<Props> = ({
   createEffect(() => {
     setIsLoading(true);
     // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
-    agent.app.bsky.feed.getAuthorFeed({
-      limit,
-      actor: username,
-      filter: "posts_no_replies",
-    }).then(({ success, data }) => {
-      if (success) {
-        const feed = (data.feed || []).map(({ post, reason }) => {
-          const facets = post.record.facets || [];
-          const rawText = post.record.text;
-          const replaces = facets.map((f: any) => {
-            const linkText = substringByBytes(rawText, f.index.byteStart, f.index.byteEnd - f.index.byteStart)
-            const type = f.features[0].$type
-            const typeMap = {
-              "app.bsky.richtext.facet#link": f.features[0].uri,
-              "app.bsky.richtext.facet#mention": `https://bsky.app/profile/${f.features[0].did}`,
-              // "app.bsky.richtext.facet#tag": `not existing yet`,
-            }
-            const link = typeMap[type]
-
-            return {
-              from: linkText,
-              to: link
-                ? `<a href="${link}" target="_blank" rel="noopener" class="text-blue-500 underline">${linkText}</a>`
-                : linkText,
-            }
-          })
-
-          const text = split(rawText, replaces.map((r: any) => r.from))
-            .map(t => {
-              const replaceWith = replaces.find((r: any) => r.from === t);
-              return {
-                val: replaceWith?.to || t,
-                setInnerHtml: !!replaceWith,
-              }
-            })
-            console.log(rawText, text)
-
-          return {
-            username: post.author.displayName,
-            handle: post.author.handle,
-            avatar: post.author.avatar, // todo fallback
-            text,
-            createdAt: post.record.createdAt,
-            uri: post.uri,
-            images: post.embed?.images || [],
-            isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
-            repostBy: reason?.by?.displayName,
-          }
-        });
-        console.log(feed)
-        setFeedData(feed)
-        setIsLoading(false)
-      } else {
-        // todo error handling
-      }
-    });
+    if (username) {
+      agent.app.bsky.feed.getAuthorFeed({
+        limit,
+        actor: username,
+        filter: "posts_no_replies",
+      }).then(({ success, data }) => {
+        if (success) {
+          const feed = formatData(data)
+          setFeedData(feed)
+          setIsLoading(false)
+        } else {
+          // todo error handling
+        }
+      });
+    } else if (feed) {
+      agent.app.bsky.feed.getFeed({
+        limit,
+        feed,
+      }).then(({ success, data }) => {
+        if (success) {
+          const feed = formatData(data)
+          setFeedData(feed)
+          setIsLoading(false)
+        } else {
+          // todo error handling
+        }
+      });
+    }
+    
   })
 
   const handleModalContent = (e, image) => {
