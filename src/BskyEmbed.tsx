@@ -4,13 +4,15 @@ import "@github/relative-time-element"
 
 import styles from './globals.css?inline'
 import { agent } from "./lib/api";
-import { formatData } from './lib/utils'
+import { formatData, getContentAfterLastSlash } from './lib/utils'
 
 interface Props {
   username?: string;
   feed?: string;
   limit?: number;
   mode?: 'dark' | '';
+  linkTarget?: '_self' | '_blank' | '_parent' | '_top';
+  linkImage?: boolean;
 }
 
 const BskyEmbed: Component<Props> = ({
@@ -18,6 +20,8 @@ const BskyEmbed: Component<Props> = ({
   feed,
   limit = 10,
   mode = '',
+  linkTarget = '_self',
+  linkImage = false,
 }: Props) => {
   let modalRef: HTMLDialogElement;
   let modalImageRef: HTMLImageElement;
@@ -55,14 +59,15 @@ const BskyEmbed: Component<Props> = ({
         }
       });
     }
-    
   })
 
   const handleModalContent = (e, image) => {
-    e.preventDefault();
-    modalImageRef.src = image.fullsize;
-    modalImageRef.alt = image.alt;
-    modalRef.showModal();
+    if (!linkImage) {
+      e.preventDefault();
+      modalImageRef.src = image.fullsize;
+      modalImageRef.alt = image.alt;
+      modalRef.showModal();
+    }
   }
 
   return (
@@ -93,25 +98,31 @@ const BskyEmbed: Component<Props> = ({
             <img src={post.avatar} alt="profile picture" class="w-14 h-14 rounded-full" />
             <div>
               <div class="flex max-w-[calc(100vw-96px)] items-center">
-                <a href={`https://bsky.app/profile/${post.handle}`} class="text-ellipsis overflow-hidden whitespace-nowrap hover:underline dark:text-white">
-                  <span class="font-bold mr-2 dark:text-white">{post.username}</span>
+                <a href={`https://bsky.app/profile/${post.handle}`} class="text-ellipsis overflow-hidden whitespace-nowrap hover:underline dark:text-white" target={linkTarget} rel={linkTarget === '_blank' ? 'noopeener' : ''}>
+                  <span class="font-bold dark:text-white">{post.username}</span>
+                  <span> </span>
                   <span class="text-slate-500 dark:text-slate-400 text-sm">@{post.handle}</span>
                 </a>
                 <span class="text-slate-500 dark:text-slate-400 text-sm">
                   <span class="mx-1">·</span>
-                  <relative-time datetime={post.createdAt} format="micro" threshold="P30D"></relative-time>
+                  <a href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`} class="hover:underline" target={linkTarget} rel={linkTarget === '_blank' ? 'noopeener' : ''}>
+                    <relative-time datetime={post.createdAt} format="micro" threshold="P30D"></relative-time>
+                  </a>
                 </span>
               </div>
 
               <p class="whitespace-pre-wrap dark:text-white">
                 {post.text.map(t => t.setInnerHtml
                   ? <span innerHTML={t.val}></span>
-                  : <span>{t.val} </span>)}
+                  : <span>{t.val}</span>)}
               </p>
 
               { post.images.length > 0 && <div class={post.images.length > 1 ? "mt-4 grid grid-cols-2 gap-2" : "mt-4"}>
                 { post.images.map(image =>
-                  <a href="#open-modal" onClick={e => handleModalContent(e, image)}>
+                  <a
+                    href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`}
+                    onClick={e => handleModalContent(e, image)}
+                  >
                     <img src={image.thumb} alt={image.alt} class="rounded-md"  />
                   </a>
                 )}

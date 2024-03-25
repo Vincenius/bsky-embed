@@ -2,13 +2,13 @@ import type { Component } from 'solid-js';
 import BskyEmbed from './BskyEmbed';
 import './globals.css'
 
-// planned options - username, limit, theme, debug (show generic vs real error)
 const App: Component = () => {
   const options = {
     username: "vincentwill.com",
     feed: "at://did:plc:jcoy7v3a2t4rcfdh6i4kza25/app.bsky.feed.generator/astro",
     mode: "",
     limit: 10,
+    linkTarget: "_blank"
   }
 
   return (
@@ -19,6 +19,8 @@ const App: Component = () => {
           // feed={options.feed}
           limit={options.limit}
           mode={options.mode}
+          // openPostOnImageClick={true}
+          linkTarget={options.linkTarget}
         />
       </div>
     </main>

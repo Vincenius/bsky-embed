@@ -6,7 +6,7 @@ A web-component to easily embed a bluesky feed.
 See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1000).
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.0.6/dist/bsky-embed.es.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.0.7/dist/bsky-embed.es.js" async></script>
   <bsky-embed
     username="vincentwill.com"
     mode="dark"
@@ -22,7 +22,7 @@ See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1
 ### Option 1. via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.0.6/dist/bsky-embed.es.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.0.7/dist/bsky-embed.es.js" async></script>
 ```
 
 ### Option 2. via npm / yarn etc.
@@ -44,6 +44,8 @@ Import in any framework using:
     feed="at://...(decide between username or feed)"
     mode="dark"
     limit="5"
+    link-target="_blank"
+    link-image="true"
   >
   </bsky-embed>
 ```
@@ -62,7 +64,8 @@ Import in any framework using:
 ### Optional
 - `limit`: how many posts you want to load (default = 10)
 - `mode`: "dark" | "". Use the dark mode if you want to render the embed in front of a dark background.
-
+- `link-target`: "_self" | "_blank" | "_parent" | "_top". How the links to the post or Bluesky user should be opened (default = "_self")
+- `link-image`: "true" | "false". If the image should go to the bluesky post instead of opening the lightbox. (default = "false")
 
 ## Run Locally
 

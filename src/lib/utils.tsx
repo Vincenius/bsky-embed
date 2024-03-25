@@ -1,29 +1,30 @@
 export const substringByBytes = (str: string, startByte: number, endByte: number): string => {
-    let byteLength = 0;
-    let startPos = 0;
-    let endPos = str.length;
+  let byteLength = 0;
+  let startPos = 0;
+  let endPos = str.length;
 
-    for (let i = 0; i < str.length; i++) {
-        let charCode = str.charCodeAt(i);
-        // Assuming UTF-16 encoding where characters greater than 255 take 2 bytes
-        byteLength += charCode > 255 ? 2 : 1;
-        if (byteLength > startByte) {
-            startPos = i;
-            break;
-        }
-    }
+  for (let i = 0; i < str.length; i++) {
+      let charCode = str.charCodeAt(i);
+      let charByteLength = (charCode & 0xff80) === 0 ? 1 : 2; // Check if the character is within ASCII range
+      byteLength += charByteLength;
+      if (byteLength > startByte) {
+          startPos = i;
+          break;
+      }
+  }
 
-    byteLength = 0;
-    for (let i = startPos; i < str.length; i++) {
-        let charCode = str.charCodeAt(i);
-        byteLength += charCode > 255 ? 2 : 1;
-        if (byteLength > endByte) {
-            endPos = i;
-            break;
-        }
-    }
+  byteLength = 0;
+  for (let i = startPos; i < str.length; i++) {
+      let charCode = str.charCodeAt(i);
+      let charByteLength = (charCode & 0xff80) === 0 ? 1 : 2; // Check if the character is within ASCII range
+      byteLength += charByteLength;
+      if (byteLength > endByte) {
+          endPos = i;
+          break;
+      }
+  }
 
-    return str.substring(startPos, endPos);
+  return str.substring(startPos, endPos);
 }
 
 export const split = (str: string, words: string[]) => {
@@ -32,8 +33,8 @@ export const split = (str: string, words: string[]) => {
 
   // Iterate through the words array
   for (let word of words) {
-      // Find the index of the current word in the string
-      let index = str.indexOf(word);
+      // Find the index of the current word in the string starting from the last found index
+      let index = str.indexOf(word, lastIndex);
 
       // If the word is found
       if (index !== -1) {
@@ -64,7 +65,7 @@ export const formatData = (data: any) =>
           const typeMap = {
             "app.bsky.richtext.facet#link": f.features[0].uri,
             "app.bsky.richtext.facet#mention": `https://bsky.app/profile/${f.features[0].did}`,
-            // "app.bsky.richtext.facet#tag": `not existing yet`,
+            "app.bsky.richtext.facet#tag": `https://bsky.app/hashtag/${f.features[0].tag}`,
           }
           const link = typeMap[type]
 
@@ -76,6 +77,7 @@ export const formatData = (data: any) =>
           }
         })
 
+        let lastMatch = 0
         const text = split(rawText, replaces.map((r: any) => r.from))
           .map(t => {
             const replaceWith = replaces.find((r: any) => r.from === t);
@@ -84,7 +86,6 @@ export const formatData = (data: any) =>
               setInnerHtml: !!replaceWith,
             }
           })
-          console.log(rawText, text)
 
         return {
           username: post.author.displayName,
@@ -93,8 +94,21 @@ export const formatData = (data: any) =>
           text,
           createdAt: post.record.createdAt,
           uri: post.uri,
-          images: post.embed?.images || [],
+          images: [
+            ...post.embed?.images || [],
+            ...post.embed?.media?.images || []
+          ],
           isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
           repostBy: reason?.by?.displayName,
         }
       });
+
+export const getContentAfterLastSlash = (str: string) => {
+    const lastIndex = str.lastIndexOf("/");
+
+    if (lastIndex !== -1) {
+        return str.substring(lastIndex + 1);
+    } else {
+        return str;
+    }
+}
