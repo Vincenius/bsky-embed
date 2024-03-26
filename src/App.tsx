@@ -8,7 +8,7 @@ const App: Component = () => {
     feed: "at://did:plc:jcoy7v3a2t4rcfdh6i4kza25/app.bsky.feed.generator/astro",
     mode: "",
     limit: 10,
-    linkTarget: "_blank"
+    linkTarget: "_self"
   }
 
   return (
@@ -19,7 +19,7 @@ const App: Component = () => {
           // feed={options.feed}
           limit={options.limit}
           mode={options.mode}
-          // openPostOnImageClick={true}
+          linkImage={true}
           linkTarget={options.linkTarget}
         />
       </div>

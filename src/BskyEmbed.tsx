@@ -122,6 +122,8 @@ const BskyEmbed: Component<Props> = ({
                   <a
                     href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`}
                     onClick={e => handleModalContent(e, image)}
+                    target={linkTarget}
+                    rel={linkTarget === '_blank' ? 'noopeener' : ''}
                   >
                     <img src={image.thumb} alt={image.alt} class="rounded-md"  />
                   </a>
