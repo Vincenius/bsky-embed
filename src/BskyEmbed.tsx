@@ -129,6 +129,20 @@ const BskyEmbed: Component<Props> = ({
                   </a>
                 )}
               </div> }
+
+              { post.card && <a
+                href={post.card.uri}
+                target="_blank"
+                rel="noopener"
+                class="mt-4 rounded-md border border-slate-300 block"
+              >
+                <img src={post.card.thumb} class="rounded-t-md" />
+                <div class="p-3">
+                  <p class="text-slate-500 dark:text-slate-400 text-sm">{new URL(post.card.uri).hostname}</p>
+                  <p class="font-bold dark:text-white mb-1">{post.card.title}</p>
+                  <p class="whitespace-pre-wrap dark:text-white">{post.card.description}</p>
+                </div>
+              </a>}
             </div>
           </div>
         </article>)}

@@ -43,6 +43,7 @@ export const formatData = (data: any) =>
             ...post.embed?.images || [],
             ...post.embed?.media?.images || []
           ],
+          card: post.embed?.$type === 'app.bsky.embed.external#view' && post.embed?.external,
           isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
           repostBy: reason?.by?.displayName,
         }
