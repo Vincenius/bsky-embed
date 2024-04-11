@@ -8,4 +8,5 @@ customElement('bsky-embed', {
   mode: '',
   linkTarget: '_self',
   linkImage: false,
+  customStyles: '',
 }, BskyEmbed);

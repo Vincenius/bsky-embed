@@ -46,6 +46,7 @@ Import in any framework using:
     limit="5"
     link-target="_blank"
     link-image="true"
+    custom-styles=".border-slate-300 { border-color: red; }"
   >
   </bsky-embed>
 ```
@@ -66,6 +67,7 @@ Import in any framework using:
 - `mode`: "dark" | "". Use the dark mode if you want to render the embed in front of a dark background.
 - `link-target`: "_self" | "_blank" | "_parent" | "_top". How the links to the post or Bluesky user should be opened (default = "_self")
 - `link-image`: "true" | "false". If the image should go to the bluesky post instead of opening the lightbox. (default = "false")
+- `custom-styles`: A string that will overwrite the default styles.
 
 ## Run Locally
 

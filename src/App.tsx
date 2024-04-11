@@ -21,6 +21,7 @@ const App: Component = () => {
           mode={options.mode}
           linkImage={true}
           linkTarget={options.linkTarget}
+          // customStyles=".border-slate-300 { color: green; }"
         />
       </div>
     </main>
