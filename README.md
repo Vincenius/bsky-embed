@@ -6,7 +6,7 @@ A web-component to easily embed a bluesky feed.
 See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1000).
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.1/dist/bsky-embed.es.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.2/dist/bsky-embed.es.js" async></script>
   <bsky-embed
     username="vincentwill.com"
     mode="dark"
@@ -22,7 +22,7 @@ See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1
 ### Option 1. via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.1/dist/bsky-embed.es.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.2/dist/bsky-embed.es.js" async></script>
 ```
 
 ### Option 2. via npm / yarn etc.
@@ -41,7 +41,8 @@ Import in any framework using:
 ```html
   <bsky-embed
     username="vincentwill.com"
-    feed="at://...(decide between username or feed)"
+    feed="at://...(decide between username, feed, or search)"
+    search="#BuildInPublic (decide between username, feed, and search)"
     mode="dark"
     limit="5"
     link-target="_blank"
@@ -60,7 +61,7 @@ Import in any framework using:
   Open the URL of your feed. Open the Developer tools and go to the network tab. Find the call from bluesky to the `getFeedGenerator`. It should show the feed id.<br/><br/>
   <img src="https://github.com/Vincenius/bsky-embed/assets/43953403/604fc30c-4c19-4391-aca3-663505c09345" alt="screenshot of the developer tools">
 </details>
-
+- `search`: the search term you want to use for displaying the result feed. It works with hashtags.
 
 ### Optional
 - `limit`: how many posts you want to load (default = 10)

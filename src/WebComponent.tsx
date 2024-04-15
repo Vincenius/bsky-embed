@@ -9,4 +9,5 @@ customElement('bsky-embed', {
   linkTarget: '_self',
   linkImage: false,
   customStyles: '',
+  search: '',
 }, BskyEmbed);

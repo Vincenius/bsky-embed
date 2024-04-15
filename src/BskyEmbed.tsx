@@ -9,6 +9,7 @@ import BskyPost from './components/BskyPost';
 interface Props {
   username?: string;
   feed?: string;
+  search?: string;
   limit?: number;
   mode?: 'dark' | '';
   linkTarget?: '_self' | '_blank' | '_parent' | '_top';
@@ -24,6 +25,7 @@ const BskyEmbed: Component<Props> = ({
   linkTarget = '_self',
   linkImage = false,
   customStyles = '',
+  search,
 }: Props) => {
   let modalRef: HTMLDialogElement;
   let modalImageRef: HTMLImageElement;
@@ -55,6 +57,20 @@ const BskyEmbed: Component<Props> = ({
       }).then(({ success, data }) => {
         if (success) {
           const feed = formatData(data)
+          setFeedData(feed)
+          setIsLoading(false)
+        } else {
+          // todo error handling
+        }
+      });
+    } else if (search) {
+      agent.app.bsky.feed.searchPosts({
+        limit,
+        q: search,
+      }).then(({ success, data }) => {
+        if (success) {
+          const mappedData = { ...data, feed: data.posts.map(p => ({ post: p })) }
+          const feed = formatData(mappedData)
           setFeedData(feed)
           setIsLoading(false)
         } else {
