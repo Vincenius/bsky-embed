@@ -1,7 +1,5 @@
 import type { Component } from 'solid-js'
-import "@github/relative-time-element"
-
-import { getContentAfterLastSlash } from '../lib/utils'
+import { getContentAfterLastSlash, timeDifference } from '../lib/utils'
 
 interface Props {
   post: any;
@@ -34,7 +32,7 @@ const BskyPost: Component<Props> = ({
           <span class="text-slate-500 dark:text-slate-400 text-sm">
             <span class="mx-1">·</span>
             <a href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`} class="hover:underline" target={linkTarget} rel={linkTarget === '_blank' ? 'noopeener' : ''}>
-              <relative-time datetime={post.createdAt} format="micro" threshold="P30D"></relative-time>
+              { timeDifference(new Date(post.createdAt)) }
             </a>
           </span>
         </div>

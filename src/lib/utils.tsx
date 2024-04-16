@@ -69,3 +69,39 @@ export const getContentAfterLastSlash = (str: string) => {
         return str;
     }
 }
+
+export const timeDifference = (previous: Date) => {
+  const current = new Date()
+
+  const msPerMinute = 60 * 1000;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerMonth = msPerDay * 30;
+  const msPerYear = msPerDay * 365;
+
+  const elapsed = current - previous;
+
+  if (elapsed < msPerMinute) {
+       return Math.floor(elapsed/1000) + 's';   
+  }
+
+  else if (elapsed < msPerHour) {
+       return Math.floor(elapsed/msPerMinute) + 'm';   
+  }
+
+  else if (elapsed < msPerDay ) {
+       return Math.floor(elapsed/msPerHour ) + 'h';   
+  }
+
+  else if (elapsed < msPerMonth) {
+      return Math.floor(elapsed/msPerDay) + 'd';   
+  }
+
+  else if (elapsed < msPerYear) {
+      return Math.floor(elapsed/msPerMonth) + ' mo';   
+  }
+
+  else {
+      return Math.floor(elapsed/msPerYear ) + ' yr';   
+  }
+}
