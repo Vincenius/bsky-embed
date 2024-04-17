@@ -31,13 +31,10 @@ const formatPost = ({ post, reason, isRoot }) => {
     }
   }
 
-  if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view') {
-    console.log(post.embed.record.record)
-  }
   const replyPost = post.embed?.$type === 'app.bsky.embed.record#view'
     ? post.embed.record
     : post.embed?.record?.record?.$type === 'app.bsky.embed.record#viewRecord' && post.embed.record.record
-  const formattedReply = replyPost && { ...replyPost, record: replyPost.value, embed: replyPost?.embeds[0] }
+  const formattedReply = replyPost && { ...replyPost, record: replyPost.value, embed: (replyPost?.embeds || [])[0] }
 
   return {
     username: post.author.displayName,

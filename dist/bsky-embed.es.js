@@ -25401,11 +25401,10 @@ const Fr = new Cu.BskyAgent({
       val: I.text,
       setInnerHtml: !1
     });
-  a.embed?.$type === "app.bsky.embed.recordWithMedia#view" && console.log(a.embed.record.record);
   const R = a.embed?.$type === "app.bsky.embed.record#view" ? a.embed.record : a.embed?.record?.record?.$type === "app.bsky.embed.record#viewRecord" && a.embed.record.record, u = R && {
     ...R,
     record: R.value,
-    embed: R?.embeds[0]
+    embed: (R?.embeds || [])[0]
   };
   return {
     username: a.author.displayName,
