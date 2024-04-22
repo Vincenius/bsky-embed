@@ -74,7 +74,7 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
     card: post.embed?.$type === 'app.bsky.embed.external#view' && post.embed?.external,
     replyPost: isRoot && formattedReply && formatPost({ post: formattedReply, reason: {$type: '', by: {displayName: ''}}, isRoot: false }),
     isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
-    repostBy: reason?.by?.displayName,
+    repostBy: reason?.by?.displayName
   }
 };
 
