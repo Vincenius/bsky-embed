@@ -3,7 +3,7 @@ import { createSignal, createEffect } from "solid-js";
 
 import styles from './globals.css?inline'
 import { agent } from "./lib/api";
-import { formatData, getContentAfterLastSlash } from './lib/utils'
+import { formatData } from './lib/utils'
 import BskyPost from './components/BskyPost';
 
 interface Props {
@@ -27,12 +27,12 @@ const BskyEmbed: Component<Props> = ({
   customStyles = '',
   search,
 }: Props) => {
-  let modalRef: HTMLDialogElement;
-  let modalImageRef: HTMLImageElement;
+  let modalRef: HTMLDialogElement | null = null;
+  let modalImageRef: HTMLImageElement | null = null;
   const [isLoading, setIsLoading] = createSignal(false);
   const [feedData, setFeedData] = createSignal([]);
 
-  createEffect(() => {
+  createEffect((): void => {
     setIsLoading(true);
 
     // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
@@ -41,7 +41,7 @@ const BskyEmbed: Component<Props> = ({
         limit,
         actor: username,
         filter: "posts_no_replies",
-      }).then(({ success, data }) => {
+      }).then(({ success, data }): void => {
         if (success) {
           const feed = formatData(data)
           setFeedData(feed)
@@ -54,7 +54,7 @@ const BskyEmbed: Component<Props> = ({
       agent.app.bsky.feed.getFeed({
         limit,
         feed,
-      }).then(({ success, data }) => {
+      }).then(({ success, data }): void => {
         if (success) {
           const feed = formatData(data)
           setFeedData(feed)
@@ -67,7 +67,7 @@ const BskyEmbed: Component<Props> = ({
       agent.app.bsky.feed.searchPosts({
         limit,
         q: search,
-      }).then(({ success, data }) => {
+      }).then(({ success, data }): void => {
         if (success) {
           const mappedData = { ...data, feed: data.posts.map(p => ({ post: p })) }
           const feed = formatData(mappedData)
@@ -80,8 +80,8 @@ const BskyEmbed: Component<Props> = ({
     }
   })
 
-  const handleModalContent = (e, image) => {
-    if (!linkImage) {
+  const handleModalContent = (e: Event, image: { fullsize: string; alt: string; }): void => {
+    if (!linkImage && modalRef && modalImageRef) {
       e.preventDefault();
       modalImageRef.src = image.fullsize;
       modalImageRef.alt = image.alt;
@@ -116,7 +116,7 @@ const BskyEmbed: Component<Props> = ({
           />
         )}
 
-        <dialog ref={modalRef} class="backdrop:bg-gray-800 backdrop:opacity-90">
+        <dialog ref={(el: HTMLDialogElement) => modalRef = el} class="backdrop:bg-gray-800 backdrop:opacity-90">
           <form class="fixed top-5 right-5">
             <button
               type="submit"
@@ -128,7 +128,7 @@ const BskyEmbed: Component<Props> = ({
                 X
             </button>
           </form>
-          <img ref={modalImageRef} src="" alt="" class="max-h-[90vh]"/>
+          <img ref={(el: HTMLImageElement) => modalImageRef = el} src="" alt="" class="max-h-[90vh]"/>
         </dialog>
       </section>
     </>

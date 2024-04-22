@@ -3,7 +3,14 @@ import BskyEmbed from './BskyEmbed';
 import './globals.css'
 
 const App: Component = () => {
-  const options = {
+  const options: {
+    username: string,
+    feed: string,
+    search: string,
+    mode: 'dark' | '',
+    limit: number,
+    linkTarget: '_self' | '_blank' | '_parent' | '_top'
+  } = {
     username: "vincentwill.com",
     feed: "at://did:plc:jcoy7v3a2t4rcfdh6i4kza25/app.bsky.feed.generator/astro",
     search: "#buildinpublic",
