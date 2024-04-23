@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js'
-import { getContentAfterLastSlash, timeDifference } from '../lib/utils'
+import {getContentAfterLastSlash, Text, timeDifference} from '../lib/utils'
 
 interface Props {
   post: any;
@@ -38,13 +38,13 @@ const BskyPost: Component<Props> = ({
         </div>
 
         <p class="whitespace-pre-wrap dark:text-white">
-          {post.text.map(t => t.setInnerHtml
+          {post.text.map((t: Text) => t.setInnerHtml
             ? <span innerHTML={t.val}></span>
             : <span>{t.val}</span>)}
         </p>
 
         { post.images.length > 0 && <div class={post.images.length > 1 ? "mt-4 grid grid-cols-2 gap-2" : "mt-4"}>
-          { post.images.map(image =>
+          { post.images.map((image: { thumb: string | undefined; alt: string | undefined; }) =>
             <a
               href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`}
               onClick={e => handleModalContent(e, image)}
@@ -62,7 +62,7 @@ const BskyPost: Component<Props> = ({
           rel="noopener"
           class="mt-4 rounded-md border border-slate-300 block"
         >
-          <img src={post.card.thumb} class="rounded-t-md" />
+          <img src={post.card.thumb} class="rounded-t-md" alt="Post Thumbnail"/>
           <div class="p-3">
             <p class="text-slate-500 dark:text-slate-400 text-sm">{new URL(post.card.uri).hostname}</p>
             <p class="font-bold dark:text-white mb-1">{post.card.title}</p>

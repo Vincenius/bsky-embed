@@ -1,11 +1,35 @@
-import { RichText } from '@atproto/api'
+import { RichText } from '@atproto/api';
 
-const formatPost = ({ post, reason, isRoot }) => {
+export interface Text{
+  val: string;
+  setInnerHtml: boolean;
+}
+
+interface Reason{
+  $type: string;
+  by: {
+    displayName: string;
+  }
+}
+
+const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: boolean }) => {
+  createdAt: string;
+  images: any[];
+  isRepost: boolean;
+  repostBy: string | undefined;
+  handle: string;
+  avatar: string;
+  text: Text[];
+  uri: string;
+  card: any;
+  replyPost: any;
+  username: string
+} = ({ post, reason, isRoot }) => {
   const facets = post.record.facets || [];
   const rawText = post.record.text;
 
-  const rt = new RichText({ text: rawText, facets })
-  const text = []
+  const rt: RichText = new RichText({ text: rawText, facets });
+  const text: Text[] = [];
 
   for (const segment of rt.segments()) {
     if (segment.isLink()) {
@@ -48,17 +72,17 @@ const formatPost = ({ post, reason, isRoot }) => {
       ...post.embed?.media?.images || []
     ],
     card: post.embed?.$type === 'app.bsky.embed.external#view' && post.embed?.external,
-    replyPost: isRoot && formattedReply && formatPost({ post: formattedReply, isRoot: false }),
+    replyPost: isRoot && formattedReply && formatPost({ post: formattedReply, reason: {$type: '', by: {displayName: ''}}, isRoot: false }),
     isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
-    repostBy: reason?.by?.displayName,
+    repostBy: reason?.by?.displayName
   }
 };
 
 export const formatData = (data: any) =>
-    (data.feed || []).map((post) => formatPost({ ...post, isRoot: true }))
+    (data.feed || []).map((post: { post: any; reason: any; isRoot: any; }) => formatPost({ ...post, isRoot: true }))
 
-export const getContentAfterLastSlash = (str: string) => {
-    const lastIndex = str.lastIndexOf("/");
+export const getContentAfterLastSlash = (str: string): string => {
+    const lastIndex: number = str.lastIndexOf("/");
 
     if (lastIndex !== -1) {
         return str.substring(lastIndex + 1);
@@ -67,38 +91,38 @@ export const getContentAfterLastSlash = (str: string) => {
     }
 }
 
-export const timeDifference = (previous: Date) => {
-  const current = new Date()
+export const timeDifference = (previous: Date): string => {
+  const current: Date = new Date();
 
-  const msPerMinute = 60 * 1000;
-  const msPerHour = msPerMinute * 60;
-  const msPerDay = msPerHour * 24;
-  const msPerMonth = msPerDay * 30;
-  const msPerYear = msPerDay * 365;
+  const msPerMinute: number = 60 * 1000;
+  const msPerHour: number = msPerMinute * 60;
+  const msPerDay: number = msPerHour * 24;
+  const msPerMonth: number = msPerDay * 30;
+  const msPerYear: number = msPerDay * 365;
 
-  const elapsed = current - previous;
+  const elapsed: number = current.getTime() - previous.getTime();
 
   if (elapsed < msPerMinute) {
-       return Math.floor(elapsed/1000) + 's';   
+       return Math.floor(elapsed/1000) + 's';
   }
 
   else if (elapsed < msPerHour) {
-       return Math.floor(elapsed/msPerMinute) + 'm';   
+       return Math.floor(elapsed/msPerMinute) + 'm';
   }
 
   else if (elapsed < msPerDay ) {
-       return Math.floor(elapsed/msPerHour ) + 'h';   
+       return Math.floor(elapsed/msPerHour ) + 'h';
   }
 
   else if (elapsed < msPerMonth) {
-      return Math.floor(elapsed/msPerDay) + 'd';   
+      return Math.floor(elapsed/msPerDay) + 'd';
   }
 
   else if (elapsed < msPerYear) {
-      return Math.floor(elapsed/msPerMonth) + ' mo';   
+      return Math.floor(elapsed/msPerMonth) + ' mo';
   }
 
   else {
-      return Math.floor(elapsed/msPerYear ) + ' yr';   
+      return Math.floor(elapsed/msPerYear ) + ' yr';
   }
 }
