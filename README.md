@@ -94,6 +94,10 @@ To build the web component use
 
 The JavaScript file for the web component will be rendered into `./dist/`. You can test the web component with the `test.html` file.
 
+## Contributors
+
+[![](https://github.com/vincenius.png?size=50)](https://github.com/Vincenius)
+[![](https://github.com/NicoNotAvailable.png?size=50)](https://github.com/NicoNotAvailable)
 
 ## License
 
