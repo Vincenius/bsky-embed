@@ -163,8 +163,8 @@ const BskyEmbed: Component<Props> = ({
             <img ref={(el: HTMLImageElement) => modalImageRef = el} src="" alt="" class="max-h-[90vh]"/>
           </dialog>
 
-          <div >
-            <button onClick={loadMorePosts}>
+          <div class="mt-8 mb-16">
+            <button onClick={loadMorePosts} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Load More Posts
             </button>
           </div>
