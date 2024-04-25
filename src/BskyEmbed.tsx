@@ -1,4 +1,4 @@
-import {Component, onMount} from 'solid-js';
+import {Component} from 'solid-js';
 import {createSignal, createEffect} from "solid-js";
 import styles from './globals.css?inline'
 import {agent} from "./lib/api";
@@ -31,61 +31,65 @@ const BskyEmbed: Component<Props> = ({
   const [isLoading, setIsLoading] = createSignal(false);
   const [feedData, setFeedData] = createSignal([]);
   const [displayLimit, setDisplayLimit] = createSignal(limit);
-
-  onMount(()=> {
-    scrollToLastPost(displayLimit());
-  })
+  const [cursor, setCursor] = createSignal<string | undefined>(undefined);
 
   createEffect((): void => {
     setIsLoading(true);
 
     // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
-    const fetchData = async () => {
-      if (username) {
-        agent.app.bsky.feed.getAuthorFeed({
-          limit: displayLimit(),
-          actor: username,
-          filter: "posts_no_replies",
-        }).then(({success, data}): void => {
-          if (success) {
-            const feed = formatData(data)
-            setFeedData(feed)
-            setIsLoading(false)
-          } else {
-            // todo error handling
-          }
-        });
-      } else if (feed) {
-        agent.app.bsky.feed.getFeed({
-          limit: displayLimit(),
-          feed,
-        }).then(({success, data}): void => {
-          if (success) {
-            const feed = formatData(data)
-            setFeedData(feed)
-            setIsLoading(false)
-          } else {
-            // todo error handling
-          }
-        });
-      } else if (search) {
-        agent.app.bsky.feed.searchPosts({
-          limit: displayLimit(),
-          q: search,
-        }).then(({success, data}): void => {
-          if (success) {
-            const mappedData = {...data, feed: data.posts.map(p => ({post: p}))}
-            const feed = formatData(mappedData)
-            setFeedData(feed)
-            setIsLoading(false)
-          } else {
-            // todo error handling
-          }
-        });
-      }
-    };
     fetchData();
   }, [username, feed, search, displayLimit]);
+
+  const fetchData = async (cursor?: string) => {
+    if (username) {
+      agent.app.bsky.feed.getAuthorFeed({
+        limit: displayLimit(),
+        actor: username,
+        filter: "posts_no_replies",
+        cursor
+      }).then(({success, data}): void => {
+        if (success) {
+          const feed = formatData(data)
+          setFeedData(feed)
+          setIsLoading(false)
+          setCursor(data.cursor)
+        } else {
+          // todo error handling
+        }
+      });
+    } else if (feed) {
+      agent.app.bsky.feed.getFeed({
+        limit: displayLimit(),
+        feed,
+        cursor
+      }).then(({success, data}): void => {
+        if (success) {
+          const feed = formatData(data)
+          setFeedData(feed)
+          setIsLoading(false)
+          setCursor(data.cursor)
+        } else {
+          // todo error handling
+        }
+      });
+    } else if (search) {
+      agent.app.bsky.feed.searchPosts({
+        limit: displayLimit(),
+        q: search,
+        cursor
+      }).then(({success, data}): void => {
+        if (success) {
+          const mappedData = {...data, feed: data.posts.map(p => ({post: p}))}
+          const feed = formatData(mappedData)
+          setFeedData(feed)
+          setIsLoading(false)
+          setCursor(data.cursor)
+        } else {
+          // todo error handling
+        }
+      });
+    }
+  };
 
   const handleModalContent = (e: Event, image: { fullsize: string; alt: string; }): void => {
     if (!linkImage && modalRef && modalImageRef) {
@@ -97,12 +101,8 @@ const BskyEmbed: Component<Props> = ({
   }
 
   const loadMorePosts = () => {
-    let newLimit = displayLimit() + 10;
-    setDisplayLimit(newLimit);
-    setTimeout(() => {
-      scrollToLastPost(newLimit - 10);
-    }, 500);
-  }
+    fetchData(cursor());
+  };
 
   const scrollToLastPost = (lastPost: number) => {
     const lastPostIndex = Math.min(feedData().length, lastPost);
