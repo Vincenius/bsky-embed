@@ -29,8 +29,8 @@ const BskyEmbed: Component<Props> = ({
   let modalRef: HTMLDialogElement | null = null;
   let modalImageRef: HTMLImageElement | null = null;
   const [isLoading, setIsLoading] = createSignal(false);
-  const [feedData, setFeedData] = createSignal([]);
-  const [displayLimit, setDisplayLimit] = createSignal(limit);
+  const [feedData, setFeedData] = createSignal<any[]>([]);
+  const [displayLimit] = createSignal(limit);
   const [cursor, setCursor] = createSignal<string | undefined>(undefined);
 
   createEffect((): void => {
@@ -50,7 +50,7 @@ const BskyEmbed: Component<Props> = ({
       }).then(({success, data}): void => {
         if (success) {
           const feed = formatData(data)
-          setFeedData(feed)
+          loadFeed(feed)
           setIsLoading(false)
           setCursor(data.cursor)
         } else {
@@ -65,7 +65,7 @@ const BskyEmbed: Component<Props> = ({
       }).then(({success, data}): void => {
         if (success) {
           const feed = formatData(data)
-          setFeedData(feed)
+          loadFeed(feed)
           setIsLoading(false)
           setCursor(data.cursor)
         } else {
@@ -81,7 +81,7 @@ const BskyEmbed: Component<Props> = ({
         if (success) {
           const mappedData = {...data, feed: data.posts.map(p => ({post: p}))}
           const feed = formatData(mappedData)
-          setFeedData(feed)
+          loadFeed(feed)
           setIsLoading(false)
           setCursor(data.cursor)
         } else {
@@ -104,19 +104,9 @@ const BskyEmbed: Component<Props> = ({
     fetchData(cursor());
   };
 
-  const scrollToLastPost = (lastPost: number) => {
-    const lastPostIndex = Math.min(feedData().length, lastPost);
-    const lastPostElement = document.getElementById(`post-${lastPostIndex}`);
-    if (lastPostElement) {
-      const rect = lastPostElement.getBoundingClientRect();
-      const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-      if (!isVisible) {
-        const desiredTop = rect.top + window.scrollY - (window.innerHeight / 2);
-        window.scrollTo({
-          top: desiredTop,
-        });
-      }
-    }
+  const loadFeed = (newData: any[]) => {
+    const updatedFeed = [...feedData(), ...newData];
+    setFeedData(updatedFeed);
   };
 
   return (
