@@ -1,8 +1,8 @@
-import {Component} from 'solid-js';
-import {createSignal, createEffect} from "solid-js";
+import { Component } from 'solid-js';
+import { createSignal, createEffect } from "solid-js";
 import styles from './globals.css?inline'
-import {agent} from "./lib/api";
-import {formatData} from './lib/utils'
+import { agent } from "./lib/api";
+import { formatData } from './lib/utils'
 import BskyPost from './components/BskyPost';
 
 interface Props {
@@ -14,18 +14,20 @@ interface Props {
   linkTarget?: '_self' | '_blank' | '_parent' | '_top';
   linkImage?: boolean;
   customStyles?: string;
+  loadMore?: boolean;
 }
 
 const BskyEmbed: Component<Props> = ({
-                                       username,
-                                       feed,
-                                       limit = 10,
-                                       mode = '',
-                                       linkTarget = '_self',
-                                       linkImage = false,
-                                       customStyles = '',
-                                       search,
-                                     }: Props) => {
+  username,
+  feed,
+  limit = 10,
+  mode = '',
+  linkTarget = '_self',
+  linkImage = false,
+  customStyles = '',
+  search,
+  loadMore = false,
+}: Props) => {
   let modalRef: HTMLDialogElement | null = null;
   let modalImageRef: HTMLImageElement | null = null;
   const [isLoading, setIsLoading] = createSignal(false);
@@ -101,6 +103,7 @@ const BskyEmbed: Component<Props> = ({
   }
 
   const loadMorePosts = () => {
+    setIsLoading(true);
     fetchData(cursor());
   };
 
@@ -116,48 +119,50 @@ const BskyEmbed: Component<Props> = ({
           {customStyles}
         </style>
         <section class={`${mode} max-w-screen-sm mx-auto flex flex-col items-center`}>
-          {isLoading() && Array.from(Array(limit)).map(() =>
-              <article class="flex gap-2 p-4 border-b border-slate-300 dark:border-slate-800 animate-pulse">
-                <div class="bg-slate-200 w-14 h-14 rounded-full dark:bg-slate-800"></div>
-                <div class="flex-1 space-y-2 py-1">
-                  <div class="grid grid-cols-4 gap-4">
-                    <div class="h-2 bg-slate-200 rounded col-span-2 dark:bg-slate-800"></div>
-                  </div>
-                  <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
-                  <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
-                  <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
-                </div>
-              </article>
-          )}
-          {!isLoading() && feedData().map((post, lastIndex) =>
+          {(feedData().length > 0) && feedData().map((post, lastIndex) =>
               <div id={`post-${lastIndex}`}>
                 <BskyPost
-                    post={post}
-                    handleModalContent={handleModalContent}
-                    linkTarget={linkTarget}
+                  post={post}
+                  handleModalContent={handleModalContent}
+                  linkTarget={linkTarget}
                 />
               </div>
+          )}
+
+          {isLoading() && Array.from(Array(limit)).map(() =>
+            <article class="w-full flex gap-2 p-4 border-b border-slate-300 dark:border-slate-800 animate-pulse">
+              <div class="bg-slate-200 w-14 h-14 rounded-full dark:bg-slate-800"></div>
+              <div class="flex-1 space-y-2 py-1">
+                <div class="grid grid-cols-4 gap-4">
+                  <div class="h-2 bg-slate-200 rounded col-span-2 dark:bg-slate-800"></div>
+                </div>
+                <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+                <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+                <div class="h-2 bg-slate-200 rounded dark:bg-slate-800"></div>
+              </div>
+            </article>
           )}
 
           <dialog ref={(el: HTMLDialogElement) => modalRef = el} class="backdrop:bg-gray-800 backdrop:opacity-90">
             <form class="fixed top-5 right-5">
               <button
-                  type="submit"
-                  aria-label="close"
-                  formmethod="dialog"
-                  formnovalidate
-                  class="bg-gray-900 rounded-full w-10 h-10 text-white flex items-center justify-center">
+                type="submit"
+                aria-label="close"
+                formmethod="dialog"
+                formnovalidate
+                class="bg-gray-900 rounded-full w-10 h-10 text-white flex items-center justify-center"
+              >
                 X
               </button>
             </form>
             <img ref={(el: HTMLImageElement) => modalImageRef = el} src="" alt="" class="max-h-[90vh]"/>
           </dialog>
 
-          <div class="mt-8 mb-16">
-            <button onClick={loadMorePosts} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          { loadMore && <div class="mt-8 mb-16">
+            <button id="bsky-load-more" onClick={loadMorePosts} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Load More Posts
             </button>
-          </div>
+          </div> }
         </section>
       </>
 

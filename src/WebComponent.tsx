@@ -10,4 +10,5 @@ customElement('bsky-embed', {
   linkImage: false,
   customStyles: '',
   search: '',
+  loadMore: false,
 }, BskyEmbed);

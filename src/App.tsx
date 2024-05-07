@@ -9,14 +9,16 @@ const App: Component = () => {
     search: string,
     mode: 'dark' | '',
     limit: number,
-    linkTarget: '_self' | '_blank' | '_parent' | '_top'
+    linkTarget: '_self' | '_blank' | '_parent' | '_top',
+    loadMore: boolean,
   } = {
     username: "vincentwill.com",
     feed: "at://did:plc:jcoy7v3a2t4rcfdh6i4kza25/app.bsky.feed.generator/astro",
     search: "#buildinpublic",
     mode: "",
-    limit: 10,
-    linkTarget: "_self"
+    limit: 2,
+    linkTarget: "_self",
+    loadMore: true,
   }
 
   return (
@@ -30,6 +32,7 @@ const App: Component = () => {
           mode={options.mode}
           linkImage={true}
           linkTarget={options.linkTarget}
+          loadMore={options.loadMore}
           // customStyles=".border-slate-300 { color: green; }"
         />
       </div>

@@ -6,7 +6,7 @@ A web-component to easily embed a bluesky feed.
 See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1000).
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.4/dist/bsky-embed.es.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.5/dist/bsky-embed.es.js" async></script>
   <bsky-embed
     username="vincentwill.com"
     mode="dark"
@@ -22,7 +22,7 @@ See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1
 ### Option 1. via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.4/dist/bsky-embed.es.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.5/dist/bsky-embed.es.js" async></script>
 ```
 
 ### Option 2. via npm / yarn etc.
@@ -47,6 +47,7 @@ Import in any framework using:
     limit="5"
     link-target="_blank"
     link-image="true"
+    load-more="true"
     custom-styles=".border-slate-300 { border-color: red; }"
   >
   </bsky-embed>
@@ -55,20 +56,29 @@ Import in any framework using:
 ### Options
 
 #### Required (at least one of these options)
-- `username`: the handle of the user whos feed you want to embed. It can be found at the and of the URL (https://bsky.app/profile/__your-handle__)
-- `feed`: the id of your feed <details>
-  <summary><i>How to find your feed id</i></summary>
+
+| Option    | Value                       | Default Value |
+|-----------|-----------------------------|---------------|
+| `username`| User handle                 | -             |
+| `feed`    | Feed ID *                   | -             |
+| `search`  | Search term (eg. hashtags)  | -             |
+
+<details>
+  <summary><i>* How to find your feed id</i></summary>
   Open the URL of your feed. Open the Developer tools and go to the network tab. Find the call from bluesky to the `getFeedGenerator`. It should show the feed id.<br/><br/>
   <img src="https://github.com/Vincenius/bsky-embed/assets/43953403/604fc30c-4c19-4391-aca3-663505c09345" alt="screenshot of the developer tools">
 </details>
-- `search`: the search term you want to use for displaying the result feed. It works with hashtags.
 
-### Optional
-- `limit`: how many posts you want to load (default = 10)
-- `mode`: "dark" | "". Use the dark mode if you want to render the embed in front of a dark background.
-- `link-target`: "_self" | "_blank" | "_parent" | "_top". How the links to the post or Bluesky user should be opened (default = "_self")
-- `link-image`: "true" | "false". If the image should go to the bluesky post instead of opening the lightbox. (default = "false")
-- `custom-styles`: A string that will overwrite the default styles.
+#### Optional
+
+| Option        | Value                                               | Default Value |
+|---------------|-----------------------------------------------------|---------------|
+| `limit`       | Positive integer                                    | `10`          |
+| `mode`        | `"dark"` or `""`                                    | -             |
+| `link-target` | `"_self"`, `"_blank"`, `"_parent"`, `"_top"`        | `"_self"`     |
+| `link-image`  | `"true"` or `"false"`                               | `"false"`     |
+| `load-more`   | `"true"` or `"false"`                               | `"false"`     |
+| `custom-styles`| String representing custom CSS styles              | -             |
 
 ## Run Locally
 
@@ -98,6 +108,7 @@ The JavaScript file for the web component will be rendered into `./dist/`. You c
 
 [![](https://github.com/vincenius.png?size=50)](https://github.com/Vincenius)
 [![](https://github.com/NicoNotAvailable.png?size=50)](https://github.com/NicoNotAvailable)
+[![](https://github.com/sirteddi.png?size=50)](https://github.com/sirteddi)
 
 ## License
 
