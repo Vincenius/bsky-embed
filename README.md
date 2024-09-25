@@ -6,7 +6,7 @@ A web-component to easily embed a bluesky feed.
 See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1000).
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.5/dist/bsky-embed.es.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/bsky-embed/dist/bsky-embed.es.js" async></script>
   <bsky-embed
     username="vincentwill.com"
     mode="dark"
@@ -22,7 +22,7 @@ See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1
 ### Option 1. via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.1.5/dist/bsky-embed.es.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/bsky-embed/dist/bsky-embed.es.js" async></script>
 ```
 
 ### Option 2. via npm / yarn etc.

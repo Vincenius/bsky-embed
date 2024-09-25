@@ -12,11 +12,11 @@ const App: Component = () => {
     linkTarget: '_self' | '_blank' | '_parent' | '_top',
     loadMore: boolean,
   } = {
-    username: "an.org",
+    username: "samuel.bsky.team",
     feed: "at://did:plc:jcoy7v3a2t4rcfdh6i4kza25/app.bsky.feed.generator/astro",
     search: "#buildinpublic",
     mode: "",
-    limit: 2,
+    limit: 5,
     linkTarget: "_self",
     loadMore: true,
   }
@@ -25,9 +25,9 @@ const App: Component = () => {
     <main class={options.mode === 'dark' ? 'bg-slate-900' : 'bg-slate-100'}>
       <div class="">
         <BskyEmbed
-          // username={options.username}
+          username={options.username}
           // feed={options.feed}
-          search={options.search}
+          // search={options.search}
           limit={options.limit}
           mode={options.mode}
           linkImage={true}

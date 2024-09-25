@@ -1,4 +1,5 @@
 import { RichText } from '@atproto/api';
+import Hls from 'hls.js';
 
 export interface Text{
   val: string;
@@ -89,6 +90,7 @@ const formatPost: ({ post, reason, isRoot }: { post: any; reason: Reason; isRoot
       ...post.embed?.images || [],
       ...post.embed?.media?.images || []
     ],
+    video: post.embed?.$type === 'app.bsky.embed.video#view' && post.embed,
     card: post.embed?.$type === 'app.bsky.embed.external#view' && post.embed?.external,
     replyPost: isRoot && formattedReply && formatPost({ post: formattedReply, reason: {$type: '', by: {displayName: ''}}, isRoot: false }),
     isRepost: reason?.$type === 'app.bsky.feed.defs#reasonRepost',
@@ -145,3 +147,51 @@ export const timeDifference = (previous: Date): string => {
       return Math.floor(elapsed/msPerYear ) + ' yr';
   }
 }
+
+export const fetchVideo = async (video: any) => {
+  if (!('IntersectionObserver' in window)) {
+    console.error('IntersectionObserver not supported');
+    return;
+  }
+
+  const videoElem = document.getElementById(video.cid); // Get the video DOM element
+
+  if (!videoElem) {
+    console.error(`Video element with id ${video.cid} not found`);
+    return;
+  }
+
+  const observerOptions = {
+    root: null, // Viewport is the root by default
+    threshold: 0.5 // 50% of the video must be visible to trigger playback
+  };
+
+  const onIntersect = async (entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Video is in view - load and play
+        if (Hls.isSupported()) {
+          var hls = new Hls();
+          hls.loadSource(video.playlist); // Load the HLS manifest
+          hls.attachMedia(videoElem); // Attach to video element
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoElem.play();
+          });
+        } else if (videoElem.canPlayType('application/vnd.apple.mpegurl')) {
+          // Fallback for native HLS support in Safari
+          videoElem.src = video.playlist;
+          videoElem.addEventListener('loadedmetadata', () => {
+            videoElem.play();
+          });
+        }
+
+        // Optionally, unobserve once video starts playing if you don't need to watch for it going out of view
+        observer.unobserve(videoElem);
+      }
+    });
+  };
+
+  // Create the observer
+  const observer = new IntersectionObserver(onIntersect, observerOptions);
+  observer.observe(videoElem); // Observe the video element
+};
