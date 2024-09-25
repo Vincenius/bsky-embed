@@ -23,8 +23,34 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
   uri: string;
   card: any;
   replyPost: any;
-  username: string
+  username: string;
+  isList?: boolean;
+  listName?: string;
+  listPurpose?: string;
+  listItemCount?: number;
 } = ({ post, reason, isRoot }) => {
+  if (post.$type === "app.bsky.graph.defs#listView") {
+    // Handle list view
+    return {
+      username: post.creator.displayName,
+      handle: post.creator.handle,
+      avatar: post.creator.avatar,
+      text: [{ val: post.description, setInnerHtml: false }],
+      createdAt: post.indexedAt,
+      uri: post.uri,
+      images: [],
+      card: null,
+      replyPost: null,
+      isRepost: false,
+      repostBy: null,
+      isList: true,
+      listName: post.name,
+      listPurpose: post.purpose,
+      listItemCount: post.listItemCount
+    };
+  }
+
+  // Existing post handling code
   const facets = post.record.facets || [];
   const rawText = post.record.text;
 
@@ -79,7 +105,7 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
 };
 
 export const formatData = (data: any) =>
-    (data.feed || []).map((post: { post: any; reason: any; isRoot: any; }) => formatPost({ ...post, isRoot: true }))
+  (data.feed || []).map((item: any) => formatPost({ post: item.post || item, reason: item.reason, isRoot: true }))
 
 export const getContentAfterLastSlash = (str: string): string => {
     const lastIndex: number = str.lastIndexOf("/");
