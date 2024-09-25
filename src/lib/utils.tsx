@@ -148,16 +148,14 @@ export const timeDifference = (previous: Date): string => {
   }
 }
 
-export const fetchVideo = async (video: any) => {
+export const fetchVideo = async (video: any, videoRef: any) => {
   if (!('IntersectionObserver' in window)) {
     console.error('IntersectionObserver not supported');
     return;
   }
 
-  const videoElem = document.getElementById(video.cid); // Get the video DOM element
-
-  if (!videoElem) {
-    console.error(`Video element with id ${video.cid} not found`);
+  if (!videoRef) {
+    console.error('Video element not found');
     return;
   }
 
@@ -173,25 +171,25 @@ export const fetchVideo = async (video: any) => {
         if (Hls.isSupported()) {
           var hls = new Hls();
           hls.loadSource(video.playlist); // Load the HLS manifest
-          hls.attachMedia(videoElem); // Attach to video element
+          hls.attachMedia(videoRef); // Attach to video element
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            videoElem.play();
+            videoRef.play();
           });
-        } else if (videoElem.canPlayType('application/vnd.apple.mpegurl')) {
+        } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
           // Fallback for native HLS support in Safari
-          videoElem.src = video.playlist;
-          videoElem.addEventListener('loadedmetadata', () => {
-            videoElem.play();
+          videoRef.src = video.playlist;
+          videoRef.addEventListener('loadedmetadata', () => {
+            videoRef.play();
           });
         }
 
         // Optionally, unobserve once video starts playing if you don't need to watch for it going out of view
-        observer.unobserve(videoElem);
+        observer.unobserve(videoRef);
       }
     });
   };
 
   // Create the observer
   const observer = new IntersectionObserver(onIntersect, observerOptions);
-  observer.observe(videoElem); // Observe the video element
+  observer.observe(videoRef); // Observe the video element
 };
