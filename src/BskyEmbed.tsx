@@ -120,7 +120,7 @@ const BskyEmbed: Component<Props> = ({
         </style>
         <section class={`${mode} max-w-screen-sm mx-auto flex flex-col items-center`}>
           {(feedData().length > 0) && feedData().map((post, lastIndex) =>
-              <div id={`post-${lastIndex}`}>
+              <div id={`post-${lastIndex}`} class="w-full">
                 <BskyPost
                   post={post}
                   handleModalContent={handleModalContent}

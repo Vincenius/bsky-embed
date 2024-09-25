@@ -62,7 +62,7 @@ const BskyPost: Component<Props> = ({
           rel="noopener"
           class="mt-4 rounded-md border border-slate-300 block"
         >
-          <img src={post.card.thumb} class="rounded-t-md" alt="Post Thumbnail"/>
+          { post.card.thumb && <img src={post.card.thumb} class="rounded-t-md" alt="Post Thumbnail"/> }
           <div class="p-3">
             <p class="text-slate-500 dark:text-slate-400 text-sm">{new URL(post.card.uri).hostname}</p>
             <p class="font-bold dark:text-white mb-1">{post.card.title}</p>

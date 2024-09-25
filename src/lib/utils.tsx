@@ -12,11 +12,11 @@ interface Reason{
   }
 }
 
-const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: boolean }) => {
+const formatPost: ({ post, reason, isRoot }: { post: any; reason: Reason; isRoot: boolean }) => {
   createdAt: string;
   images: any[];
   isRepost: boolean;
-  repostBy: string | undefined;
+  repostBy: string | null | undefined;
   handle: string;
   avatar: string;
   text: Text[];
@@ -24,10 +24,6 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
   card: any;
   replyPost: any;
   username: string;
-  isList?: boolean;
-  listName?: string;
-  listPurpose?: string;
-  listItemCount?: number;
 } = ({ post, reason, isRoot }) => {
   if (post.$type === "app.bsky.graph.defs#listView") {
     // Handle list view
@@ -43,10 +39,6 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
       replyPost: null,
       isRepost: false,
       repostBy: null,
-      isList: true,
-      listName: post.name,
-      listPurpose: post.purpose,
-      listItemCount: post.listItemCount
     };
   }
 
@@ -105,7 +97,8 @@ const formatPost: ({post, reason, isRoot}: { post: any; reason: Reason; isRoot: 
 };
 
 export const formatData = (data: any) =>
-  (data.feed || []).map((item: any) => formatPost({ post: item.post || item, reason: item.reason, isRoot: true }))
+  (data.feed || []).map((post: { post: any; reason: any; isRoot: any; }) => formatPost({ ...post, isRoot: true }))
+
 
 export const getContentAfterLastSlash = (str: string): string => {
     const lastIndex: number = str.lastIndexOf("/");
