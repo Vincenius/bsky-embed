@@ -22,7 +22,7 @@ See it in action on [CodePen](https://codepen.io/Vincenius/pen/RwdXgyw?editors=1
 ### Option 1. via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bsky-embed/dist/bsky-embed.es.js" async></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/bsky-embed/dist/bsky-embed.es.js" async></script>
 ```
 
 ### Option 2. via npm / yarn etc.
