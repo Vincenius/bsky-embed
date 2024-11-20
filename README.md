@@ -110,7 +110,9 @@ The JavaScript file for the web component will be rendered into `./dist/`. You c
 [![](https://github.com/NicoNotAvailable.png?size=50)](https://github.com/NicoNotAvailable)
 [![](https://github.com/sirteddi.png?size=50)](https://github.com/sirteddi)
 [![](https://github.com/antont.png?size=50)](https://github.com/antont)
-[![](https://github.com/RetroGameDeveloper.png?size=50)](https://github.com/RetroGameDeveloper)
+<a href="https://github.com/RetroGameDeveloper">
+  <img src="https://github.com/RetroGameDeveloper.png" width="50" height="50" />
+</a>
 
 ## License
 
