@@ -77,18 +77,24 @@ const formatPost: ({ post, reason, isRoot }: { post: any; reason: Reason; isRoot
   const replyPost = post.embed?.$type === 'app.bsky.embed.record#view'
     ? post.embed.record
     : post.embed?.record?.record?.$type === 'app.bsky.embed.record#viewRecord' && post.embed.record.record
-  const formattedReply = replyPost && { ...replyPost, record: replyPost.value, embed: (replyPost?.embeds || [])[0] }
+  const formattedReply = replyPost && {
+    ...replyPost,
+    record: replyPost.value || replyPost.record,
+    embed: (replyPost?.embeds || [])[0]
+  }
+  const author = post.author || post.creator
 
   return {
-    username: post.author.displayName,
-    handle: post.author.handle,
-    avatar: post.author.avatar, // todo fallback
+    username: author.displayName,
+    handle: author.handle,
+    avatar: author.avatar, // todo fallback
     text,
     createdAt: post.record.createdAt,
     uri: post.uri,
     images: [
       ...post.embed?.images || [],
-      ...post.embed?.media?.images || []
+      ...post.embed?.media?.images || [],
+      ...[(post.embed?.media?.external)].filter(Boolean).map((image: any) => ({ ...image, alt: image.title, thumb: image.uri }))
     ],
     video: post.embed?.$type === 'app.bsky.embed.video#view' && post.embed,
     card: post.embed?.$type === 'app.bsky.embed.external#view' && post.embed?.external,
