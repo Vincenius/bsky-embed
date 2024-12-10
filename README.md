@@ -49,6 +49,7 @@ Import in any framework using:
     link-image="true"
     load-more="true"
     custom-styles=".border-slate-300 { border-color: red; }"
+    disable-styles="false"
   >
   </bsky-embed>
 ```
@@ -71,14 +72,15 @@ Import in any framework using:
 
 #### Optional
 
-| Option        | Value                                               | Default Value |
-|---------------|-----------------------------------------------------|---------------|
-| `limit`       | Positive integer                                    | `10`          |
-| `mode`        | `"dark"` or `""`                                    | -             |
-| `link-target` | `"_self"`, `"_blank"`, `"_parent"`, `"_top"`        | `"_self"`     |
-| `link-image`  | `"true"` or `"false"`                               | `"false"`     |
-| `load-more`   | `"true"` or `"false"`                               | `"false"`     |
-| `custom-styles`| String representing custom CSS styles              | -             |
+| Option           | Value                                               | Default Value |
+|------------------|-----------------------------------------------------|---------------|
+| `limit`          | Positive integer                                    | `10`          |
+| `mode`           | `"dark"` or `""`                                    | -             |
+| `link-target`    | `"_self"`, `"_blank"`, `"_parent"`, `"_top"`        | `"_self"`     |
+| `link-image`     | `"true"` or `"false"`                               | `"false"`     |
+| `load-more`      | `"true"` or `"false"`                               | `"false"`     |
+| `disable-styles` | `"true"` or `"false"`                               | `"false"`     |
+| `custom-styles`  | String representing custom CSS styles               | -             |
 
 ## Run Locally
 

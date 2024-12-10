@@ -1,6 +1,5 @@
 import type { Component } from 'solid-js';
 import BskyEmbed from './BskyEmbed';
-import './globals.css'
 
 const App: Component = () => {
   const options: {

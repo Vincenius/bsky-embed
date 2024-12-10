@@ -13,6 +13,7 @@ interface Props {
   mode?: 'dark' | '';
   linkTarget?: '_self' | '_blank' | '_parent' | '_top';
   linkImage?: boolean;
+  disableStyles?: boolean;
   customStyles?: string;
   loadMore?: boolean;
 }
@@ -25,6 +26,7 @@ const BskyEmbed: Component<Props> = ({
   linkTarget = '_self',
   linkImage = false,
   customStyles = '',
+  disableStyles = false,
   search,
   loadMore = false,
 }: Props) => {
@@ -114,10 +116,12 @@ const BskyEmbed: Component<Props> = ({
 
   return (
       <>
-        <style>
+        {!disableStyles && <style>
           {styles}
+        </style>}
+        {customStyles && <style>
           {customStyles}
-        </style>
+        </style>}
         <section class={`${mode} max-w-screen-sm mx-auto flex flex-col items-center`}>
           {(feedData().length > 0) && feedData().map((post, lastIndex) =>
               <div id={`post-${lastIndex}`} class="w-full">
