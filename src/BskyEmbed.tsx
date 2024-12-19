@@ -3,6 +3,7 @@ import { createSignal, createEffect } from "solid-js";
 import styles from './globals.css?inline'
 import { agent } from "./lib/api";
 import { formatData } from './lib/utils'
+import { DateFormat } from './lib/types'
 import BskyPost from './components/BskyPost';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
   disableStyles?: boolean;
   customStyles?: string;
   loadMore?: boolean;
+  dateFormat?: DateFormat;
 }
 
 const BskyEmbed: Component<Props> = ({
@@ -29,6 +31,7 @@ const BskyEmbed: Component<Props> = ({
   disableStyles = false,
   search,
   loadMore = false,
+  dateFormat,
 }: Props) => {
   let modalRef: HTMLDialogElement | null = null;
   let modalImageRef: HTMLImageElement | null = null;
@@ -129,6 +132,7 @@ const BskyEmbed: Component<Props> = ({
                   post={post}
                   handleModalContent={handleModalContent}
                   linkTarget={linkTarget}
+                  dateFormat={dateFormat}
                 />
               </div>
           )}

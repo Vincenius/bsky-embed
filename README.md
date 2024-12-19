@@ -48,8 +48,9 @@ Import in any framework using:
     link-target="_blank"
     link-image="true"
     load-more="true"
-    custom-styles=".border-slate-300 { border-color: red; }"
     disable-styles="false"
+    custom-styles=".border-slate-300 { border-color: red; }"
+    date-format='{"type":"absolute","locale":"de-DE","options":{"weekday":"long","year":"numeric","month":"long","day":"numeric"}}'
   >
   </bsky-embed>
 ```
@@ -80,7 +81,8 @@ Import in any framework using:
 | `link-image`     | `"true"` or `"false"`                               | `"false"`     |
 | `load-more`      | `"true"` or `"false"`                               | `"false"`     |
 | `disable-styles` | `"true"` or `"false"`                               | `"false"`     |
-| `custom-styles`  | String representing custom CSS styles               | -             |
+| `custom-styles  `| String representing custom CSS styles               | -             |
+| `date-format`    | JSON String with type, locale & options (see [Issue#35](https://github.com/Vincenius/bsky-embed/issues/35))  | `'{"type":"relative"}'` |
 
 ## Run Locally
 

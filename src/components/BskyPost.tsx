@@ -1,12 +1,14 @@
 import type { Component } from 'solid-js'
 import { onMount } from 'solid-js'
 import { getContentAfterLastSlash, Text, timeDifference, fetchVideo } from '../lib/utils'
+import { DateFormat } from '../lib/types'
 
 interface Props {
   post: any;
   linkTarget: '_self' | '_blank' | '_parent' | '_top';
   handleModalContent: any;
   isCard?: boolean;
+  dateFormat?: DateFormat
 }
 
 const BskyPost: Component<Props> = ({
@@ -14,6 +16,7 @@ const BskyPost: Component<Props> = ({
   post,
   handleModalContent,
   isCard = false,
+  dateFormat,
 }: Props) => {
   let videoRef: HTMLVideoElement | undefined;
 
@@ -40,7 +43,9 @@ const BskyPost: Component<Props> = ({
           <span class="text-slate-500 dark:text-slate-400 text-sm">
             <span class="mx-1">·</span>
             <a href={`https://bsky.app/profile/${post.handle}/post/${getContentAfterLastSlash(post.uri)}`} class="hover:underline" target={linkTarget} rel={linkTarget === '_blank' ? 'noopeener' : ''}>
-              { timeDifference(new Date(post.createdAt)) }
+              { dateFormat && dateFormat.type === 'absolute'
+                ? new Date(post.createdAt).toLocaleDateString(dateFormat.locale, dateFormat.options)
+                : timeDifference(new Date(post.createdAt)) }
             </a>
           </span>
         </div>

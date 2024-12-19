@@ -32,6 +32,16 @@ const App: Component = () => {
           linkImage={true}
           linkTarget={options.linkTarget}
           loadMore={options.loadMore}
+          // dateFormat={{
+          //   type: 'absolute',
+          //   locale: 'de-DE',
+          //   options: {
+          //     weekday: 'long',
+          //     year: 'numeric',
+          //     month: 'long',
+          //     day: 'numeric',
+          //   }
+          // }}
           // customStyles=".border-slate-300 { color: green; }"
         />
       </div>

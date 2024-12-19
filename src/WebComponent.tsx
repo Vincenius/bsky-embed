@@ -12,4 +12,5 @@ customElement('bsky-embed', {
   disableStyles: false,
   search: '',
   loadMore: false,
+  dateFormat: {},
 }, BskyEmbed);
