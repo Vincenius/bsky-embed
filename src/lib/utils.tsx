@@ -25,7 +25,10 @@ const formatPost: ({ post, reason, isRoot }: { post: any; reason: Reason; isRoot
   card: any;
   replyPost: any;
   username: string;
-} = ({ post, reason, isRoot }) => {
+} | null = ({ post, reason, isRoot }) => {
+  if (post.$type === "app.bsky.embed.record#viewNotFound") {
+    return null
+  }
   if (post.$type === "app.bsky.graph.defs#listView") {
     // Handle list view
     return {

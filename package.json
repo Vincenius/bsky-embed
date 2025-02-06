@@ -1,6 +1,6 @@
 {
   "name": "bsky-embed",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A web-component to easily embed a bluesky feed",
   "scripts": {
     "start": "vite",

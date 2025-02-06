@@ -40204,6 +40204,8 @@ const Ec = /* @__PURE__ */ Lb(mK), Hm = ({
   reason: e,
   isRoot: r
 }) => {
+  if (t.$type === "app.bsky.embed.record#viewNotFound")
+    return null;
   if (t.$type === "app.bsky.graph.defs#listView")
     return {
       username: t.creator.displayName,
