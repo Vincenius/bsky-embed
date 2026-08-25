@@ -26,7 +26,7 @@ const App: Component = () => {
         <BskyEmbed
           username={options.username}
           // feed={options.feed}
-          // search={options.search}
+          // search={options.search} // deprecated
           limit={options.limit}
           mode={options.mode}
           linkImage={true}

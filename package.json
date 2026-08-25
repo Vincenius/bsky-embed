@@ -1,6 +1,6 @@
 {
   "name": "bsky-embed",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "A web-component to easily embed a bluesky feed",
   "scripts": {
     "start": "vite",
@@ -15,7 +15,6 @@
     "@babel/cli": "^7.24.1",
     "@babel/core": "^7.24.4",
     "@babel/preset-env": "^7.24.4",
-    "@types/hls.js": "^1.0.0",
     "autoprefixer": "^10.4.19",
     "babel-preset-solid": "^1.8.17",
     "postcss": "^8.4.38",
@@ -26,8 +25,7 @@
     "vite-plugin-solid": "^2.10.2"
   },
   "dependencies": {
-    "@atproto/api": "^0.12.5",
-    "hls.js": "^0.8.5",
+    "hls.js": "^1.7.1",
     "solid-element": "^1.8.0",
     "solid-js": "^1.8.17"
   }

@@ -1,10 +1,91 @@
-import { RichText } from '@atproto/api';
-import Hls from 'hls.js';
-
 export interface Text {
   val: string;
   setInnerHtml: boolean;
 }
+
+interface FacetFeature {
+  $type: string;
+  uri?: string;
+  did?: string;
+  tag?: string;
+}
+
+interface Facet {
+  index: { byteStart: number; byteEnd: number };
+  features: FacetFeature[];
+}
+
+interface Segment {
+  text: string;
+  feature?: FacetFeature;
+}
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+// Post text is arbitrary user input and the faceted segments below are injected
+// via innerHTML, so everything interpolated into that markup has to be escaped.
+const escapeHtml = (value: string): string =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+// Link facets carry a URI straight from the post record - only ever turn
+// http(s) into an anchor, so a javascript:/data: URI cannot become a link. The
+// original string is returned rather than URL's normalised form so the href
+// stays exactly what the author posted; escapeHtml keeps it inside the
+// attribute.
+const safeHref = (uri: string | undefined): string | null => {
+  try {
+    const { protocol } = new URL(String(uri));
+    return protocol === 'http:' || protocol === 'https:' ? String(uri) : null;
+  } catch {
+    return null;
+  }
+};
+
+// Splits a post into plain and faceted segments, the way RichText.segments()
+// from @atproto/api does. The server already sends the facets, so all that is
+// left is slicing the text - facet indices are UTF-8 byte offsets, so the
+// encoded form is what gets sliced.
+const segmentText = (text: string, facets: Facet[]): Segment[] => {
+  const bytes = encoder.encode(text);
+  const sorted = facets
+    .filter(f => f?.index && f.features?.length && f.index.byteStart < f.index.byteEnd)
+    .sort((a, b) => a.index.byteStart - b.index.byteStart);
+
+  const segments: Segment[] = [];
+  let cursor = 0;
+
+  for (const facet of sorted) {
+    const { byteStart, byteEnd } = facet.index;
+    if (byteStart < cursor) continue; // overlaps the previous facet - skip it
+
+    if (byteStart > cursor) {
+      segments.push({ text: decoder.decode(bytes.slice(cursor, byteStart)) });
+    }
+    segments.push({
+      text: decoder.decode(bytes.slice(byteStart, byteEnd)),
+      feature: facet.features[0],
+    });
+    cursor = byteEnd;
+  }
+
+  if (cursor < bytes.length) {
+    segments.push({ text: decoder.decode(bytes.slice(cursor)) });
+  }
+
+  // RichText always yields at least one segment, even for empty text - keep
+  // that so callers never have to special-case an empty post.
+  if (!segments.length) {
+    segments.push({ text });
+  }
+
+  return segments;
+};
 
 interface Reason {
   $type: string;
@@ -45,28 +126,55 @@ const formatPost: ({ post, reason, isRoot }: { post: any; reason: Reason; isRoot
       repostBy: null,
     };
   }
+  if (post.$type === "app.bsky.feed.defs#generatorView") {
+    // Handle a quoted feed generator. Unlike a quoted post it carries no
+    // `record`, so it has to be mapped here or the post below would throw.
+    return {
+      username: post.creator.displayName,
+      handle: post.creator.handle,
+      avatar: post.creator.avatar,
+      text: [{ val: post.description, setInnerHtml: false }],
+      createdAt: post.indexedAt,
+      uri: post.uri,
+      images: [],
+      card: null,
+      replyPost: null,
+      isRepost: false,
+      repostBy: null,
+    };
+  }
+  // Any other embedded record without a `record` (labelers, detached quotes,
+  // future types) is not renderable as a post - skip it instead of throwing.
+  if (!post.record) {
+    return null
+  }
 
   // Existing post handling code
   const facets = post.record.facets || [];
   const rawText = post.record.text;
 
-  const rt: RichText = new RichText({ text: rawText, facets });
   const text: Text[] = [];
 
-  for (const segment of rt.segments()) {
-    if (segment.isLink()) {
+  for (const segment of segmentText(rawText, facets)) {
+    const feature = segment.feature;
+
+    const href = feature?.$type === 'app.bsky.richtext.facet#link'
+      ? safeHref(feature.uri)
+      : null;
+
+    if (href) {
       text.push({
-        val: `<a href="${segment.link?.uri}" target="_blank" rel="noopener" class="text-blue-500 underline">${segment.text}</a>`,
+        val: `<a href="${escapeHtml(href)}" target="_blank" rel="noopener" class="text-blue-500 underline">${escapeHtml(segment.text)}</a>`,
         setInnerHtml: true,
       })
-    } else if (segment.isMention()) {
+    } else if (feature?.$type === 'app.bsky.richtext.facet#mention') {
       text.push({
-        val: `<a href="https://bsky.app/profile/${segment.mention?.did}" target="_blank" rel="noopener" class="text-blue-500 underline">${segment.text}</a>`,
+        val: `<a href="https://bsky.app/profile/${escapeHtml(feature.did ?? '')}" target="_blank" rel="noopener" class="text-blue-500 underline">${escapeHtml(segment.text)}</a>`,
         setInnerHtml: true,
       })
-    } else if (segment.isTag()) {
+    } else if (feature?.$type === 'app.bsky.richtext.facet#tag') {
       text.push({
-        val: `<a href="https://bsky.app/hashtag/${segment.tag?.tag}" target="_blank" rel="noopener" class="text-blue-500 underline">${segment.text}</a>`,
+        val: `<a href="https://bsky.app/hashtag/${escapeHtml(feature.tag ?? '')}" target="_blank" rel="noopener" class="text-blue-500 underline">${escapeHtml(segment.text)}</a>`,
         setInnerHtml: true,
       })
     } else {
@@ -174,32 +282,35 @@ export const fetchVideo = async (video: any, videoRef: any, disableAutoplay: boo
   };
 
   const onIntersect = async (entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Video is in view - load and play
-        if (Hls.isSupported()) {
-          var hls = new Hls();
-          hls.loadSource(video.playlist); // Load the HLS manifest
-          hls.attachMedia(videoRef); // Attach to video element
-          hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            if (!disableAutoplay) {
-              videoRef.play();
-            }
-          });
-        } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
-          // Fallback for native HLS support in Safari
-          videoRef.src = video.playlist;
-          videoRef.addEventListener('loadedmetadata', () => {
-            if (!disableAutoplay) {
-              videoRef.play();
-            }
-          });
-        }
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
 
-        // Optionally, unobserve once video starts playing if you don't need to watch for it going out of view
-        observer.unobserve(videoRef);
+      // Optionally, unobserve once video starts playing if you don't need to watch for it going out of view
+      observer.unobserve(videoRef);
+
+      // Video is in view - load and play. hls.js is only pulled in at this
+      // point, so feeds without videos never pay for it.
+      const { default: Hls } = await import('hls.js/light');
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(video.playlist); // Load the HLS manifest
+        hls.attachMedia(videoRef); // Attach to video element
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (!disableAutoplay) {
+            videoRef.play();
+          }
+        });
+      } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
+        // Fallback for native HLS support in Safari
+        videoRef.src = video.playlist;
+        videoRef.addEventListener('loadedmetadata', () => {
+          if (!disableAutoplay) {
+            videoRef.play();
+          }
+        });
       }
-    });
+    }
   };
 
   // Create the observer

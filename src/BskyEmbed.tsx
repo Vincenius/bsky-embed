@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import { createSignal, createEffect } from "solid-js";
 import styles from './globals.css?inline'
-import { agent } from "./lib/api";
+import { getAuthorFeed, getFeed, searchPosts } from "./lib/api";
 import { formatData } from './lib/utils'
 import { DateFormat } from './lib/types'
 import BskyPost from './components/BskyPost';
@@ -57,7 +57,7 @@ const BskyEmbed: Component<Props> = ({
 
   const fetchData = async (cursor?: string) => {
     if (username) {
-      agent.app.bsky.feed.getAuthorFeed({
+      getAuthorFeed({
         limit: displayLimit(),
         actor: username,
         filter: "posts_no_replies",
@@ -73,7 +73,7 @@ const BskyEmbed: Component<Props> = ({
         }
       });
     } else if (feed) {
-      agent.app.bsky.feed.getFeed({
+      getFeed({
         limit: displayLimit(),
         feed,
         cursor
@@ -88,13 +88,13 @@ const BskyEmbed: Component<Props> = ({
         }
       });
     } else if (search) {
-      agent.app.bsky.feed.searchPosts({
+      searchPosts({
         limit: displayLimit(),
         q: search,
         cursor
       }).then(({success, data}): void => {
         if (success) {
-          const mappedData = {...data, feed: data.posts.map(p => ({post: p}))}
+          const mappedData = {...data, feed: data.posts.map((p: any) => ({post: p}))}
           const feed = formatData(mappedData)
           loadFeed(feed)
           setIsLoading(false)

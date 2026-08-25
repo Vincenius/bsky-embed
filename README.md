@@ -36,6 +36,10 @@ Import in any framework using:
   import "bsky-embed/dist/bsky-embed.es.js"
 ```
 
+> **Note:** `dist/` also contains `bsky-embed-hls.js`, which is only fetched when a
+> post with a video scrolls into view. The CDN and npm/bundler setups above handle
+> this automatically - if you copy the files by hand, copy both.
+
 ## Usage
 
 Minimal:
@@ -50,7 +54,7 @@ All options:
   <bsky-embed
     username="vincentwill.com"
     feed="at://...(decide between username, feed, or search)"
-    search="#BuildInPublic (decide between username, feed, and search)"
+    search="#BuildInPublic (deprecated, use feed instead)"
     mode="dark"
     limit="5"
     link-target="_blank"
@@ -70,16 +74,36 @@ All options:
 
 #### Required (at least one of these options)
 
-| Option    | Value                       | Default Value |
-|-----------|-----------------------------|---------------|
-| `username`| User handle                 | -             |
-| `feed`    | Feed ID *                   | -             |
-| `search`  | Search term (eg. hashtags)  | -             |
+| Option    | Value                          | Default Value |
+|-----------|--------------------------------|---------------|
+| `username`| User handle                    | -             |
+| `feed`    | Feed ID *                      | -             |
+| `search`  | Search term (eg. hashtags) **  | -             |
 
 <details>
   <summary><i>* How to find your feed id</i></summary>
   Open the URL of your feed. Open the Developer tools and go to the network tab. Find the call from bluesky to the `getFeedGenerator`. It should show the feed id.<br/><br/>
   <img src="https://github.com/Vincenius/bsky-embed/assets/43953403/604fc30c-4c19-4391-aca3-663505c09345" alt="screenshot of the developer tools">
+</details>
+
+<details>
+  <summary><i>How to turn a hashtag or search term into a feed</i></summary>
+
+  Many hashtag feeds already exist — search for one in the Bluesky app, or build your own with a no-code feed builder like [Graze](https://graze.social), [SkyFeed](https://skyfeed.app) or [Bluesky Feed Creator](https://blueskyfeeds.com), then copy its `at://` URI into `feed`.
+
+  Example for `#buildinpublic`:
+
+  ```html
+  <bsky-embed feed="at://did:plc:oio4hkxaop4ao4wz2pp3f4cr/app.bsky.feed.generator/build" limit="5"></bsky-embed>
+  ```
+</details>
+
+<details>
+  <summary><i>** Why <code>search</code> is deprecated</i></summary>
+
+  Bluesky throttles unauthenticated `app.bsky.feed.searchPosts` and answers `403 Request forbidden by administrative rules`, so `search` embeds fail intermittently or stop working altogether ([Issue#54](https://github.com/Vincenius/bsky-embed/issues/54)). `load-more` never works with `search`, because passing a cursor always returns `403`.
+
+  Use `feed` instead — `app.bsky.feed.getFeed` is not throttled and paginates normally.
 </details>
 
 #### Optional
