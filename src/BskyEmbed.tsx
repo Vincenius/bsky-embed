@@ -79,7 +79,8 @@ const BskyEmbed: Component<Props> = ({
           setIsLoading(false)
           setCursor(data.cursor)
         } else {
-          // todo error handling
+          setIsLoading(false)
+          setCursor(undefined)
         }
       });
     } else if (feed) {
@@ -94,7 +95,8 @@ const BskyEmbed: Component<Props> = ({
           setIsLoading(false)
           setCursor(data.cursor)
         } else {
-          // todo error handling
+          setIsLoading(false)
+          setCursor(undefined)
         }
       });
     } else if (search) {
@@ -108,9 +110,12 @@ const BskyEmbed: Component<Props> = ({
           const feed = formatData(mappedData)
           loadFeed(feed)
           setIsLoading(false)
-          setCursor(data.cursor)
+          // searchPosts with a cursor is always rejected (403) for unauthenticated requests,
+          // so don't offer "Load More" for search
+          setCursor(undefined)
         } else {
-          // todo error handling
+          setIsLoading(false)
+          setCursor(undefined)
         }
       });
     }

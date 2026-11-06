@@ -11,6 +11,13 @@ import { transform } from 'esbuild';
  * This component is loaded straight from a CDN via <script type="module">, so
  * nothing ever re-bundles it and those annotations buy us nothing. Minify the
  * emitted chunks ourselves instead.
+ *
+ * The entry chunk is also wrapped in an IIFE so none of its top-level bindings
+ * leak into the global scope. Some site builders inject the embed snippet a
+ * second time as a classic script, which otherwise throws
+ * "Identifier 'x' has already been declared" (see issue #46). The entry has no
+ * imports/exports (only a dynamic import()), so wrapping it is safe; the
+ * re-registration itself is already a no-op in component-register.
  */
 const minifyEsmLib = (): Plugin => ({
   name: 'minify-esm-lib',
@@ -21,6 +28,7 @@ const minifyEsmLib = (): Plugin => ({
       chunk.code = (await transform(chunk.code, {
         minify: true,
         target: 'esnext',
+        ...(chunk.isEntry ? { format: 'iife' as const } : {}),
       })).code;
     }
   },

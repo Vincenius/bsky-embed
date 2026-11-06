@@ -13,15 +13,20 @@ const xrpc = async (method: string, params: Record<string, any>): Promise<XrpcRe
     }
   }
 
-  const res = await fetch(`${SERVICE}/xrpc/${method}?${query.toString()}`, {
-    headers: { accept: "application/json" },
-  });
+  try {
+    const res = await fetch(`${SERVICE}/xrpc/${method}?${query.toString()}`, {
+      headers: { accept: "application/json" },
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      return { success: false, data: null };
+    }
+
+    return { success: true, data: await res.json() };
+  } catch {
+    // network / CORS errors (e.g. Bluesky's 403 on searchPosts has no CORS headers)
     return { success: false, data: null };
   }
-
-  return { success: true, data: await res.json() };
 };
 
 // https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
