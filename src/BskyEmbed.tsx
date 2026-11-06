@@ -6,8 +6,17 @@ import { formatData } from './lib/utils'
 import { DateFormat } from './lib/types'
 import BskyPost from './components/BskyPost';
 
+// https://docs.bsky.app/docs/api/app-bsky-feed-get-author-feed
+type AuthorFeedFilter =
+  | 'posts_no_replies'
+  | 'posts_with_replies'
+  | 'posts_with_media'
+  | 'posts_with_video'
+  | 'posts_and_author_threads';
+
 interface Props {
   username?: string;
+  filter?: AuthorFeedFilter | '';
   feed?: string;
   search?: string;
   limit?: number;
@@ -26,6 +35,7 @@ interface Props {
 
 const BskyEmbed: Component<Props> = ({
   username,
+  filter,
   feed,
   limit = 10,
   mode = '',
@@ -60,7 +70,7 @@ const BskyEmbed: Component<Props> = ({
       getAuthorFeed({
         limit: displayLimit(),
         actor: username,
-        filter: "posts_no_replies",
+        filter: filter || "posts_no_replies",
         cursor
       }).then(({success, data}): void => {
         if (success) {

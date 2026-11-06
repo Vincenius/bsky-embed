@@ -53,6 +53,7 @@ All options:
 ```html
   <bsky-embed
     username="vincentwill.com"
+    filter="posts_with_video"
     feed="at://...(decide between username, feed, or search)"
     search="#BuildInPublic (deprecated, use feed instead)"
     mode="dark"
@@ -111,6 +112,7 @@ All options:
 | Option           | Value                                               | Default Value |
 |------------------|-----------------------------------------------------|---------------|
 | `limit`          | Positive integer                                    | `10`          |
+| `filter`         | Only with `username`: `"posts_no_replies"`, `"posts_with_replies"`, `"posts_with_media"`, `"posts_with_video"`, `"posts_and_author_threads"` | `"posts_no_replies"` |
 | `mode`           | `"dark"` or `""`                                    | -             |
 | `link-target`    | `"_self"`, `"_blank"`, `"_parent"`, `"_top"`        | `"_self"`     |
 | `link-image`     | `"true"` or `"false"`                               | `"false"`     |

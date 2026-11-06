@@ -3,6 +3,7 @@ import BskyEmbed from './BskyEmbed';
 
 customElement('bsky-embed', {
   username: '',
+  filter: '',
   feed: '',
   limit: 10,
   mode: '',
