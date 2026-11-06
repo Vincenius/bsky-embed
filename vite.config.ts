@@ -25,10 +25,10 @@ const minifyEsmLib = (): Plugin => ({
   async generateBundle(_options, bundle) {
     for (const chunk of Object.values(bundle)) {
       if (chunk.type !== 'chunk') continue;
-      chunk.code = (await transform(chunk.code, {
+      const code = chunk.isEntry ? `(()=>{${chunk.code}\n})();` : chunk.code;
+      chunk.code = (await transform(code, {
         minify: true,
         target: 'esnext',
-        ...(chunk.isEntry ? { format: 'iife' as const } : {}),
       })).code;
     }
   },
